@@ -8,6 +8,7 @@ import pytest
 from template_mcp_server.src.tools.code_review_tool import generate_code_review_prompt
 from template_mcp_server.src.tools.multiply_tool import multiply_numbers
 from template_mcp_server.src.tools.redhat_logo_tool import get_redhat_logo
+from template_mcp_server.src.tools.whimsify_tool import whimsify
 
 
 class TestMultiplyTool:
@@ -200,6 +201,234 @@ class TestMultiplyTool:
         assert result1["result"] == result2["result"]
         assert result1["status"] == "success"
         assert result2["status"] == "success"
+
+
+class TestWhimsifyTool:
+    """Test the whimsify tool."""
+
+    def test_whimsify_basic_example(self):
+        """Test the basic example whimsify(4, 9) = 50."""
+        # Arrange
+        x, y = 4, 9
+
+        # Act
+        result = whimsify(x, y)
+
+        # Assert
+        assert result["status"] == "success"
+        assert result["operation"] == "whimsify"
+        assert result["x"] == 4
+        assert result["y"] == 9
+        assert result["result"] == 50  # (4+1)(9+1) = 5*10 = 50
+        assert result["message"] == "Successfully whimsified 4 and 9"
+
+    def test_whimsify_zeros(self):
+        """Test whimsify with zero inputs."""
+        # Arrange
+        x, y = 0, 0
+
+        # Act
+        result = whimsify(x, y)
+
+        # Assert
+        assert result["status"] == "success"
+        assert result["result"] == 1  # (0+1)(0+1) = 1*1 = 1
+
+    def test_whimsify_floats(self):
+        """Test whimsify with floating point numbers."""
+        # Arrange
+        x, y = 2.5, 3.5
+
+        # Act
+        result = whimsify(x, y)
+
+        # Assert
+        assert result["status"] == "success"
+        assert result["result"] == 15.75  # (2.5+1)(3.5+1) = 3.5*4.5 = 15.75
+
+    def test_whimsify_negative_values(self):
+        """Test whimsify with negative values."""
+        # Arrange
+        x, y = -1, 10
+
+        # Act
+        result = whimsify(x, y)
+
+        # Assert
+        assert result["status"] == "success"
+        assert result["result"] == 0  # (-1+1)(10+1) = 0*11 = 0
+
+    def test_whimsify_both_negative(self):
+        """Test whimsify with both negative values."""
+        # Arrange
+        x, y = -5, -3
+
+        # Act
+        result = whimsify(x, y)
+
+        # Assert
+        assert result["status"] == "success"
+        assert result["result"] == 8  # (-5+1)(-3+1) = (-4)(-2) = 8
+
+    def test_whimsify_one_negative_one_positive(self):
+        """Test whimsify with one negative and one positive value."""
+        # Arrange
+        x, y = -2, 3
+
+        # Act
+        result = whimsify(x, y)
+
+        # Assert
+        assert result["status"] == "success"
+        assert result["result"] == -4  # (-2+1)(3+1) = (-1)(4) = -4
+
+    def test_whimsify_large_numbers(self):
+        """Test whimsify with large numbers."""
+        # Arrange
+        x, y = 999, 1000
+
+        # Act
+        result = whimsify(x, y)
+
+        # Assert
+        assert result["status"] == "success"
+        assert result["result"] == 1001000  # (999+1)(1000+1) = 1000*1001 = 1001000
+
+    def test_whimsify_invalid_input_string(self):
+        """Test whimsify with invalid string input."""
+        # Arrange
+        x, y = "5", 3
+
+        # Act
+        result = whimsify(x, y)
+
+        # Assert
+        assert result["status"] == "error"
+        assert "error" in result
+        assert "Failed to perform whimsification" in result["message"]
+
+    def test_whimsify_invalid_input_none(self):
+        """Test whimsify with None input."""
+        # Arrange
+        x, y = None, 3
+
+        # Act
+        result = whimsify(x, y)
+
+        # Assert
+        assert result["status"] == "error"
+        assert "error" in result
+        assert "Failed to perform whimsification" in result["message"]
+
+    def test_whimsify_invalid_input_list(self):
+        """Test whimsify with list input."""
+        # Arrange
+        x, y = [1, 2], 3
+
+        # Act
+        result = whimsify(x, y)
+
+        # Assert
+        assert result["status"] == "error"
+        assert "error" in result
+        assert "Failed to perform whimsification" in result["message"]
+
+    def test_whimsify_both_invalid_inputs(self):
+        """Test whimsify with both inputs invalid."""
+        # Arrange
+        x, y = "invalid", "also_invalid"
+
+        # Act
+        result = whimsify(x, y)
+
+        # Assert
+        assert result["status"] == "error"
+        assert "error" in result
+        assert "Failed to perform whimsification" in result["message"]
+
+    @patch("template_mcp_server.src.tools.whimsify_tool.logger")
+    def test_whimsify_logging_success(self, mock_logger):
+        """Test that successful whimsification is logged."""
+        # Arrange
+        x, y = 4, 9
+
+        # Act
+        whimsify(x, y)
+
+        # Assert
+        mock_logger.info.assert_called_with("Whimsify tool called: (4+1)(9+1) = 50")
+
+    @patch("template_mcp_server.src.tools.whimsify_tool.logger")
+    def test_whimsify_logging_error(self, mock_logger):
+        """Test that errors are logged."""
+        # Arrange
+        x, y = "invalid", 3
+
+        # Act
+        whimsify(x, y)
+
+        # Assert
+        mock_logger.error.assert_called()
+
+    def test_whimsify_return_type(self):
+        """Test that the function returns a dictionary."""
+        # Arrange
+        x, y = 4, 9
+
+        # Act
+        result = whimsify(x, y)
+
+        # Assert
+        assert isinstance(result, dict)
+        assert "status" in result
+        assert "operation" in result
+        assert "x" in result
+        assert "y" in result
+        assert "result" in result
+        assert "message" in result
+
+    def test_whimsify_error_return_structure(self):
+        """Test that error responses have the correct structure."""
+        # Arrange
+        x, y = "invalid", 3
+
+        # Act
+        result = whimsify(x, y)
+
+        # Assert
+        assert isinstance(result, dict)
+        assert result["status"] == "error"
+        assert "error" in result
+        assert "message" in result
+        assert "Failed to perform whimsification" in result["message"]
+
+    def test_whimsify_not_commutative(self):
+        """Test that whimsify gives same results regardless of order (commutative for this operation)."""
+        # Arrange
+        x, y = 5, 3
+
+        # Act
+        result1 = whimsify(x, y)
+        result2 = whimsify(y, x)
+
+        # Assert
+        # (5+1)(3+1) = 6*4 = 24 and (3+1)(5+1) = 4*6 = 24
+        assert result1["result"] == result2["result"]
+        assert result1["status"] == "success"
+        assert result2["status"] == "success"
+
+    def test_whimsify_float_precision(self):
+        """Test whimsify with floating point precision."""
+        # Arrange
+        x, y = 0.1, 0.2
+
+        # Act
+        result = whimsify(x, y)
+
+        # Assert
+        # (0.1+1)(0.2+1) = 1.1*1.2 = 1.32
+        assert result["status"] == "success"
+        assert result["result"] == pytest.approx(1.32, rel=1e-10)
 
 
 class TestCodeReviewTool:

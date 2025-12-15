@@ -1,0 +1,88 @@
+# Git and version control
+.git
+.gitignore
+.github
+
+# Python virtual environments and caches
+.venv
+venv
+env
+ENV
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.tox
+.nox
+.coverage
+.coverage.*
+htmlcov
+.hypothesis
+
+# IDE and editor files
+.vscode
+.idea
+.cursor
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Test files (not needed in production container)
+tests/
+examples/
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# Deployment configurations (not needed in container)
+deployment/
+Containerfile
+compose.yaml
+Makefile
+
+# Build artifacts
+build/
+dist/
+*.egg-info
+*.egg
+
+# Log files
+*.log
+build.log
+
+# Lock files
+uv.lock
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Temporary files
+*.tmp
+*.bak
+.*.bak
+
+# Security reports
+bandit-report.json
+safety-report.json
+.safety-project.ini
+
+# Pre-commit
+.pre-commit-config.yaml
